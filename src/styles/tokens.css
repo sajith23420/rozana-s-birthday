@@ -9,6 +9,8 @@
   /* — Type ——————————————————————————————————— */
   --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Used once, by Chapter 01's birthday line. */
+  --font-script: 'Parisienne', 'Segoe Script', cursive;
 
   /* — Ground ————————————————————————————————— */
   --color-void: #050308;

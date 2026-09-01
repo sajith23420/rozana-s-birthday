@@ -17,15 +17,40 @@ export const copy = {
       'Some people enter our lives quietly\u2026',
       '\u2026and somehow make ordinary moments feel different.',
     ],
-    welcome: `Welcome, ${site.name} \u{1F339}`,
-    cta: 'Enter Your Little World',
-    hint: 'Best with sound on',
+    welcome: 'A Magical Surprise\u2026',
+    cta: 'Open Your Surprise  \u2764\uFE0F',
+    hint: 'Crafted with love   \u00B7   Just for you',
   },
   garden: {
-    eyebrow: 'Chapter 02 — Rose Garden',
+    eyebrow: 'Chapter 01 — Our Beginning',
     title: 'A little world\nmade for you.',
+    /* The one word the headline colours. Matched as a substring of
+       whichever line contains it — see SplitText's `accent` prop. */
+    titleAccent: 'you.',
+    /* The handwritten line, set in the script face. */
+    script: `Happy Birthday ${site.pet}\u2661`,
     sub: 'Because some people deserve more than an ordinary birthday wish.',
-    cta: 'Wander a little',
+    cta: 'Enter Our World',
+    scroll: 'Scroll to begin our story',
+    /* The masthead. Labels are display text; `to` is the chapter the
+       item scrolls to. The rail still reaches every chapter — these
+       six are the ones the masthead names. */
+    nav: [
+      { label: 'Home', to: 'garden' },
+      { label: 'Journey', to: 'film' },
+      { label: 'Universe', to: 'starmap' },
+      { label: 'Moments', to: 'little' },
+      { label: 'Letter', to: 'letter' },
+      { label: 'Why You', to: 'reveal' },
+    ],
+    song: 'Our Song',
+    /* Repeated, in order, along the bottom rule. */
+    ticker: [
+      `Happy Birthday ${site.pet}`,
+      'You mean the world to me',
+      `Happy Birthday ${site.pet}`,
+      'Forever & always',
+    ],
   },
   starmap: {
     eyebrow: 'Chapter 03 — Star Map',

@@ -101,7 +101,7 @@ export function LittleThings() {
       }
     >
       {/* ── Content column — the right/centre negative space ───── */}
-      <div className="flex min-h-0 flex-1 flex-col lg:justify-center lg:pl-[40%] lg:pr-[70px] xl:pl-[44%] xl:pr-[100px]">
+      <div className="flex min-h-0 flex-1 flex-col lg:justify-center lg:pl-[48%] lg:pr-[30px] xl:pl-[52%] xl:pr-[50px]">
         <header className="relative flex shrink-0 flex-col items-center text-center">
           <Eyebrow align="center">{copy.little.eyebrow}</Eyebrow>
           <SplitText

@@ -64,6 +64,10 @@ export function PremiumButton({
           'border border-transparent bg-champagne text-void',
         variant === 'ghost' &&
           'border border-paper/15 text-paper-dim hover:text-paper',
+        /* Chapter 01's masthead palette: a rose hairline rather than
+           a champagne one, and no fill — the glow does the work. */
+        variant === 'rose' &&
+          'border border-rose-soft/45 text-rose-mist hover:border-rose-soft/80 hover:text-paper',
         className
       )}
       {...rest}
@@ -75,10 +79,18 @@ export function PremiumButton({
           aria-hidden="true"
         />
       )}
-      {/* Soft outer glow on hover */}
+      {/* Soft outer glow. Every variant lifts it on hover; the rose
+          one is already faintly lit at rest. */}
       <span
-        className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{ boxShadow: '0 0 40px -4px rgba(217, 190, 142, 0.6)' }}
+        className={cn(
+          'pointer-events-none absolute inset-0 rounded-full transition-opacity duration-500 group-hover:opacity-100',
+          variant === 'rose' ? 'opacity-55' : 'opacity-0'
+        )}
+        style={{
+          boxShadow: variant === 'rose'
+            ? '0 0 34px -4px rgba(232, 160, 176, 0.65)'
+            : '0 0 40px -4px rgba(217, 190, 142, 0.6)',
+        }}
         aria-hidden="true"
       />
       <span className="relative z-10 whitespace-nowrap">{children}</span>

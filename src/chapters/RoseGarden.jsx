@@ -1,26 +1,37 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Chapter } from '../components/layout/Chapter.jsx';
+import { StoryNav } from '../components/layout/StoryNav.jsx';
 import { SplitText } from '../components/ui/SplitText.jsx';
-import { Eyebrow } from '../components/ui/Eyebrow.jsx';
 import { Reveal } from '../components/ui/Reveal.jsx';
+import { PremiumButton } from '../components/ui/PremiumButton.jsx';
+import { MessageTicker } from '../components/ui/MessageTicker.jsx';
+import { HeartIcon } from '../components/ui/HeartIcon.jsx';
 import { Rose } from '../components/fx/Rose.jsx';
 import { Fireflies } from '../components/fx/Fireflies.jsx';
 import { ParticleField } from '../components/fx/ParticleField.jsx';
 import { copy } from '../content/copy.js';
+import { EASE } from '../lib/easing.js';
 import { usePointer } from '../hooks/usePointer.js';
 import { useReducedMotion } from '../hooks/useReducedMotion.js';
 import { seeded } from '../lib/utils.js';
-import { useMemo } from 'react';
 
 /* ══════════════════════════════════════════════════════════════════
-   02 — ROSE GARDEN
+   01 — ROSE GARDEN · THE OPENING FRAME
 
-   Five-plane depth — the hero photograph, distant stars/haze, a far
-   hedge of roses, the type, and a near hedge that passes in front of
-   it. Scroll moves each plane at its own rate and the pointer adds a
-   slow camera drift. Foreground petals occasionally overlap the
-   typography to create depth.
+   One cinematic screen, composed asymmetrically: the masthead across
+   the top, the editorial column held in the left ~45%, the
+   photograph filling the right ~55%, and the birthday ticker and the
+   scroll mark along the bottom. Nothing here scrolls past the fold —
+   the chapter opts out of the shell's vertical padding and owns its
+   own rhythm, so the whole composition lands inside one viewport.
+
+   The depth system is unchanged: the hero photograph, distant stars
+   and haze, a far hedge of roses, the type, and a near hedge that
+   passes in front of it. Scroll moves each plane at its own rate and
+   the pointer adds a slow camera drift. The near hedge now keeps to
+   the left of the frame so it reads against the type rather than
+   over the photograph.
 
    Plane 0 is the supplied artwork. See the `.hero-photo` note in
    styles/base.css for why it is masked rather than shown full-bleed.
@@ -37,9 +48,11 @@ const FAR = [
   { x: 38, y: 77, s: 54, seed: 13 }, { x: 57, y: 84, s: 44, seed: 19 },
   { x: 74, y: 76, s: 58, seed: 27 }, { x: 90, y: 83, s: 48, seed: 31 },
 ];
+/* Kept to the left half: the right of the frame is the photograph,
+   and a blurred rose over the couple would read as a smudge. */
 const NEAR = [
-  { x: -2, y: 96, s: 132, seed: 41 }, { x: 26, y: 104, s: 108, seed: 47 },
-  { x: 62, y: 101, s: 120, seed: 53 }, { x: 94, y: 97, s: 142, seed: 59 },
+  { x: -3, y: 96, s: 132, seed: 41 }, { x: 17, y: 104, s: 104, seed: 47 },
+  { x: 36, y: 101, s: 118, seed: 53 }, { x: 52, y: 98, s: 128, seed: 59 },
 ];
 
 /* Distant background stars / dust. */
@@ -130,7 +143,6 @@ export function RoseGarden() {
   const { ref: pointer } = usePointer();
   const [heroLoaded, setHeroLoaded] = useState(false);
 
-
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start end', 'end start'],
@@ -158,27 +170,28 @@ export function RoseGarden() {
     <Chapter
       id="garden"
       ref={ref}
+      padY={false}
       className="overflow-hidden"
+      innerClassName="flex min-h-[100svh] flex-col py-6 sm:py-8"
       backdrop={
         <>
           {/* Plane 0 — the artwork.
 
               A foreground visual, not a wash: full strength, no tint,
-              no vignette, nothing dimming the photograph. It sits in
-              the backdrop slot, so the type and the chapter rail both
-              draw above it.
+              nothing dimming the photograph. It sits in the backdrop
+              slot, so the type and the masthead both draw above it.
 
-              Wide screens give it the right 52% at full bleed — top,
-              bottom and right edges are the viewport edges, so there is
-              no band or gap anywhere. Narrow screens keep the lower
-              panel: a right-hand column at 390px would leave nothing to
-              set the heading in.
+              Wide screens give it the right 55% at full bleed — top,
+              bottom and right edges are the viewport edges, so there
+              is no band or gap anywhere. Narrow screens keep the
+              lower panel: a right-hand column at 390px would leave
+              nothing to set the heading in.
 
               object-position leans right of centre on wide screens so
-              the couple clears the edge feather; elsewhere the frame is
-              already close to the photograph's own composition. */}
+              the couple clears the edge feather; elsewhere the frame
+              is already close to the photograph's own composition. */}
           <motion.div
-            className="absolute inset-x-0 bottom-0 h-[54%] overflow-hidden sm:h-[62%] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[52%]"
+            className="absolute inset-x-0 bottom-0 h-[54%] overflow-hidden sm:h-[62%] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[55%]"
             style={{ y: yHero }}
           >
             <img
@@ -190,7 +203,7 @@ export function RoseGarden() {
               decoding="async"
               onLoad={() => setHeroLoaded(true)}
               onError={() => setHeroLoaded(true)}
-              className={`hero-photo h-full w-full object-cover object-center transition-opacity duration-[1600ms] ease-out lg:object-[60%_50%] ${
+              className={`hero-photo h-full w-full object-cover object-center transition-opacity duration-[1600ms] ease-out lg:object-[58%_46%] ${
                 heroLoaded ? 'opacity-100' : 'opacity-0'
               }`}
             />
@@ -204,6 +217,19 @@ export function RoseGarden() {
                 background:
                   'linear-gradient(to bottom, rgba(5,3,8,0.96) 0%, rgba(5,3,8,0.72) 12%,' +
                   ' rgba(5,3,8,0.34) 24%, rgba(5,3,8,0.12) 36%, transparent 48%)',
+              }}
+              aria-hidden="true"
+            />
+
+            {/* The bottom feather. The left edge is masked in CSS; this
+                is the other edge that would otherwise read as the
+                straight side of a rectangle, and it also settles the
+                photograph behind the ticker. */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-[26%]"
+              style={{
+                background:
+                  'linear-gradient(to top, rgba(5,3,8,0.92) 0%, rgba(5,3,8,0.55) 38%, transparent 100%)',
               }}
               aria-hidden="true"
             />
@@ -224,6 +250,32 @@ export function RoseGarden() {
               }}
             />
           </motion.div>
+
+          {/* The masthead scrim. The photograph's string lights sit
+              directly behind the links on a wide screen, and warm
+              bokeh under 10px letterforms is unreadable. */}
+          <div
+            className="absolute inset-x-0 top-0 h-[22%]"
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(5,3,8,0.86) 0%, rgba(5,3,8,0.55) 42%,' +
+                ' rgba(5,3,8,0.2) 74%, transparent 100%)',
+            }}
+            aria-hidden="true"
+          />
+
+          {/* The editorial side is held down a little further, so the
+              headline always has ground to sit on however bright the
+              photograph's left edge happens to be. */}
+          <div
+            className="absolute inset-y-0 left-0 hidden w-[62%] lg:block"
+            style={{
+              background:
+                'linear-gradient(to right, rgba(5,3,8,0.92) 0%, rgba(9,4,12,0.72) 42%,' +
+                ' rgba(12,5,14,0.34) 74%, transparent 100%)',
+            }}
+            aria-hidden="true"
+          />
 
           <ParticleField count={44} intensity={0.85} color="232, 160, 176" seed={17} />
           <Fireflies count={12} />
@@ -247,80 +299,149 @@ export function RoseGarden() {
         </>
       }
       foreground={
-        /* Plane 4 — the near hedge, passing in front of the type */
-        <motion.div className="absolute inset-x-0 -bottom-[22%] h-[68%]" style={{ y: yNear }}>
-          <div className="absolute inset-0" style={drift(24)}>
-            {NEAR.map((r, i) => (
-              <motion.div
-                key={r.seed}
-                className="absolute blur-[3px]"
-                style={{ left: `${r.x}%`, top: `${r.y}%`, translate: '-50% -50%', opacity: 0.7 }}
-                animate={reduced ? {} : { y: [0, -12, 0], rotate: [0, 2, 0] }}
-                transition={{ duration: 12 + i * 1.4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.9 }}
-              >
-                <Rose bloom={1} size={r.s} seed={r.seed} glow={false} />
-              </motion.div>
-            ))}
+        <>
+          {/* Plane 4 — the near hedge, passing in front of the type */}
+          <motion.div className="absolute inset-x-0 -bottom-[24%] h-[68%]" style={{ y: yNear }}>
+            <div className="absolute inset-0" style={drift(24)}>
+              {NEAR.map((r, i) => (
+                <motion.div
+                  key={r.seed}
+                  className="absolute blur-[3px]"
+                  style={{ left: `${r.x}%`, top: `${r.y}%`, translate: '-50% -50%', opacity: 0.55 }}
+                  animate={reduced ? {} : { y: [0, -12, 0], rotate: [0, 2, 0] }}
+                  transition={{ duration: 12 + i * 1.4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.9 }}
+                >
+                  <Rose bloom={1} size={r.s} seed={r.seed} glow={false} />
+                </motion.div>
+              ))}
+            </div>
+            {/* Ground, so the near roses have something to sit on.
+
+                It reaches nothing like as far up the frame as it used
+                to: the foreground slot draws above the content, and
+                at its old strength this plate was an opaque black
+                sheet over the band the scroll mark sits in. */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-3/4"
+              style={{
+                background:
+                  'linear-gradient(to top, #050308 0%, rgba(5,3,8,0.6) 18%, transparent 42%)',
+              }}
+            />
+            {/* Foreground petal shapes for depth overlap */}
+            <ForegroundPetals reduced={reduced} />
+          </motion.div>
+
+          {/* Plane 5 — the bottom rule. Full-bleed, and inert: the
+              foreground slot takes no pointer events at all. */}
+          <div className="absolute inset-x-0 bottom-[74px] sm:bottom-[86px]">
+            <MessageTicker items={copy.garden.ticker} />
           </div>
-          {/* Ground, so the near roses have something to sit on */}
-          <div
-            className="absolute inset-x-0 bottom-0 h-3/4"
-            style={{ background: 'linear-gradient(to top, #050308 32%, transparent)' }}
-          />
-          {/* Foreground petal shapes for depth overlap */}
-          <ForegroundPetals reduced={reduced} />
-        </motion.div>
+        </>
       }
     >
-      <motion.div
-        className="relative flex min-h-[62svh] flex-col justify-center"
-        style={{ y: yText, opacity: fade }}
-      >
-        <Eyebrow>{copy.garden.eyebrow}</Eyebrow>
+      <StoryNav />
 
-        {/* The one <h1> of the running experience. The Entrance has its own
-            heading, but it unmounts on entry — without this the document
-            would have no level-1 heading at all. Rendering is identical. */}
-        <SplitText
-          as="h1"
-          text={copy.garden.title}
-          className="t-display t-xl mt-8 max-w-[15ch] text-paper"
-          delay={0.15}
-        />
-
-        <Reveal delay={0.5} className="mt-8 max-w-[46ch]">
-          <p className="t-body text-[clamp(0.9rem,2.4vw,1.05rem)]">{copy.garden.sub}</p>
-        </Reveal>
-
-        <Reveal delay={0.75} className="mt-12">
-          {/* py/-my pair: a 48px touch target that occupies no extra layout
-              space, so the composition is unchanged. */}
-          <button
-            onClick={scrollOn}
-            className="group -my-3 inline-flex items-center gap-4 py-3 text-champagne"
-            style={{ filter: 'drop-shadow(0 1px 5px rgba(5,3,8,0.95))' }}
-          >
-            <span className="font-sans text-[0.6875rem] uppercase tracking-[0.32em]">
-              {copy.garden.cta}
+      {/* ── The editorial column — the left 45% ─────────────────
+          `pb` reserves the band the ticker and the scroll mark own,
+          so the button can never land underneath them. */}
+      <div className="flex flex-1 items-center pb-[112px] pt-6 sm:pb-[128px] lg:pt-0">
+        <motion.div
+          className="relative w-full lg:w-[47%] lg:min-w-[440px]"
+          style={{ y: yText, opacity: fade }}
+        >
+          <Reveal delay={0} y={16} blur={8} className="flex flex-col gap-4">
+            <span className="t-eyebrow">{copy.garden.eyebrow}</span>
+            {/* The chapter mark: a hairline broken by a small rose. */}
+            <span className="flex items-center gap-3" aria-hidden="true">
+              <span className="hairline block w-16 sm:w-20" />
+              <Rose bloom={1} size={18} seed={11} glow={false} />
+              <span className="hairline block w-10 sm:w-14" />
             </span>
-            <span className="relative block h-[1px] w-12 overflow-hidden bg-champagne/30">
-              <motion.span
-                className="absolute inset-0 origin-left bg-champagne"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: [0, 1, 0] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            </span>
-            <motion.span
+          </Reveal>
+
+          <div className="relative mt-6 sm:mt-8">
+            {/* The one <h1> of the running experience. The Entrance has
+                its own heading, but it unmounts on entry — without this
+                the document would have no level-1 heading at all. */}
+            <SplitText
+              as="h1"
+              text={copy.garden.title}
+              accent={copy.garden.titleAccent}
+              accentClassName="text-rose-soft"
+              className="t-display t-garden max-w-[14ch] text-paper"
+              delay={0.15}
+            />
+            {/* The flourish beside the first line — desktop only, where
+                there is room for it to sit clear of the letterforms. */}
+            <span
+              className="pointer-events-none absolute right-1 top-[0.3em] hidden text-rose-soft/70 lg:block"
               aria-hidden="true"
-              animate={reduced ? {} : { x: [0, 6, 0] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
-              →
-            </motion.span>
-          </button>
-        </Reveal>
-      </motion.div>
+              <HeartIcon size={26} filled={false} />
+            </span>
+          </div>
+
+          {/* The handwritten line. */}
+          <Reveal delay={0.55} y={14} blur={8}>
+            <p className="t-script mt-4 text-[clamp(1.6rem,4.4vw,2.6rem)] sm:mt-5">
+              {copy.garden.script}
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.75} className="mt-5 max-w-[32ch] sm:mt-6">
+            <p className="t-body text-[clamp(0.875rem,2.2vw,1rem)] leading-relaxed">
+              {copy.garden.sub}
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.95} className="mt-7 sm:mt-9">
+            <PremiumButton variant="rose" onClick={scrollOn}>
+              <span className="flex items-center gap-3">
+                <HeartIcon size={14} className="text-rose-mist" />
+                {copy.garden.cta}
+              </span>
+            </PremiumButton>
+          </Reveal>
+        </motion.div>
+      </div>
+
+      {/* ── The scroll mark, under the rule ───────────────────── */}
+      <motion.button
+        onClick={scrollOn}
+        className="absolute inset-x-0 bottom-2 mx-auto flex w-fit flex-col items-center gap-2 py-1"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.2, delay: 1.2, ease: EASE.silk }}
+      >
+        <span
+          className="flex h-8 w-5 items-center justify-center rounded-full border border-champagne/80 text-champagne-light"
+          style={{ boxShadow: '0 0 16px -3px rgba(217,190,142,0.75)' }}
+          aria-hidden="true"
+        >
+          <motion.span
+            animate={reduced ? {} : { y: [-2, 2, -2] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" aria-hidden="true">
+              <path
+                d="M6 9.5l6 5.5 6-5.5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </motion.span>
+        </span>
+        <span
+          className="font-sans text-[8px] uppercase tracking-[0.42em] text-champagne-light sm:text-[9px]"
+          style={{ textShadow: '0 0 18px rgba(217,190,142,0.75), 0 1px 3px rgba(5,3,8,0.9)' }}
+        >
+          {copy.garden.scroll}
+        </span>
+      </motion.button>
     </Chapter>
   );
 }

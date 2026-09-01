@@ -20,6 +20,11 @@ export const site = {
   fullName: 'Rozana',
   /* Signs the letter and the closing frame. */
   signature: 'Sajith',
+  /* What the birthday line and the ticker call her — the name said
+     out loud rather than the one on the masthead. */
+  pet: 'Suduu',
+  /* The wordmark in Chapter 01's masthead. */
+  brand: 'Rozana Blosem',
 
   /* The date this is for. Structured rather than a formatted string so a
      chapter can present it however it likes later. Nothing displays it

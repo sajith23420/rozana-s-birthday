@@ -23,6 +23,26 @@
 
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 
+/* ══════════════════════════════════════════════════════════════════
+   Chapter 01's message ticker.
+
+   The track holds the message list twice, so translating it exactly
+   half its own width lands the second copy where the first began and
+   the loop is seamless. `transform` is the only animated property —
+   no timers, no rAF, no React state, and nothing that touches layout.
+   ══════════════════════════════════════════════════════════════════ */
+@keyframes ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+@layer components {
+  .ticker-track {
+    animation: ticker-scroll var(--ticker-dur, 48s) linear infinite;
+    will-change: transform;
+  }
+}
+
 @keyframes flicker {
   0%, 100% { opacity: 0.5; }
   42%      { opacity: 0.95; }

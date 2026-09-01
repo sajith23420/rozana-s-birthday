@@ -132,6 +132,42 @@
      same way — the smaller of a width and a height reading. */
   .t-thought { font-size: clamp(1.35rem, min(5.4vw, 5.6svh), 3rem); }
 
+  /* Chapter 01 is a single cinematic screen: masthead, headline, the
+     birthday line, a lede, a button, then the ticker and the scroll
+     mark. Width alone would push the button under the ticker on a
+     short laptop, so the headline is measured against height too —
+     the same reading as .t-final and .t-thought. */
+  .t-garden { font-size: clamp(2.1rem, min(6.4vw, 8.6svh), 5.25rem); }
+
+  /* The handwritten birthday line. The glow is a static text-shadow,
+     never an animated filter — it costs one paint and then nothing. */
+  .t-script {
+    font-family: var(--font-script);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--color-rose-soft);
+    text-shadow:
+      0 0 14px rgba(232, 160, 176, 0.55),
+      0 0 38px rgba(200, 85, 110, 0.35);
+  }
+
+  /* The message ticker's rules: a hairline above and below, warmed
+     rather than drawn — no border colour strong enough to read as a
+     box edge. */
+  .ticker-rule {
+    border-top: 1px solid color-mix(in srgb, var(--color-rose-soft) 26%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-rose-soft) 26%, transparent);
+    background: linear-gradient(
+      to right,
+      rgba(12, 5, 12, 0.72),
+      rgba(43, 10, 20, 0.66) 50%,
+      rgba(12, 5, 12, 0.72)
+    );
+    box-shadow:
+      0 0 26px -6px rgba(200, 85, 110, 0.4),
+      inset 0 0 34px -12px rgba(232, 160, 176, 0.35);
+  }
+
   /* — Surfaces (used sparingly, never a glass casserole) ——— */
   .surface-veil {
     background: linear-gradient(

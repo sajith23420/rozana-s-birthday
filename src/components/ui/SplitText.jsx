@@ -19,6 +19,8 @@ export function SplitText({
   text,
   className = '',
   lineClassName = '',
+  accent = null,
+  accentClassName = '',
   delay = 0,
   stagger = 0.14,
   duration = 1.15,
@@ -35,6 +37,21 @@ export function SplitText({
   const lineClass = typeof lineClassName === 'function'
     ? lineClassName
     : () => lineClassName;
+
+  /* An optional accent: one substring of one line, given its own
+     class. Off by default, so every headline that does not ask for
+     one renders exactly as before. */
+  const renderLine = (line) => {
+    const at = accent ? line.indexOf(accent) : -1;
+    if (at < 0) return splitGlyphs(line);
+    return (
+      <>
+        {splitGlyphs(line.slice(0, at))}
+        <span className={accentClassName}>{splitGlyphs(accent)}</span>
+        {splitGlyphs(line.slice(at + accent.length))}
+      </>
+    );
+  };
 
   const lineVariants = {
     hidden: reduced ? { opacity: 0 } : { y: '108%', opacity: 0 },
@@ -62,7 +79,7 @@ export function SplitText({
             variants={lineVariants}
             custom={i}
           >
-            {splitGlyphs(line)}
+            {renderLine(line)}
           </motion.span>
         </span>
       ))}
