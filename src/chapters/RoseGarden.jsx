@@ -195,6 +195,12 @@ export function RoseGarden() {
             style={{ y: yHero }}
           >
             <img
+              /* Same guard as SmartImage: if the file is already in
+                 cache the load event can beat the handler, and the
+                 hero would stay at opacity 0 for the whole visit. */
+              ref={(node) => {
+                if (node?.complete && node.naturalWidth > 0) setHeroLoaded(true);
+              }}
               src={HERO_SRC}
               alt=""
               aria-hidden="true"

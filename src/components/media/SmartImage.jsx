@@ -43,6 +43,14 @@ function SmartImageBase({
       />
 
       <motion.img
+        /* A cached file can finish decoding before React has the load
+           handler on the element — on a phone returning to a chapter
+           that is the common case, not the rare one. Without this the
+           photo would sit at opacity 0 for good, showing the well and
+           nothing else. `complete` catches the event we missed. */
+        ref={(node) => {
+          if (node?.complete && node.naturalWidth > 0) setLoaded(true);
+        }}
         src={image.src}
         alt={image.alt ?? ''}
         loading={priority ? 'eager' : 'lazy'}

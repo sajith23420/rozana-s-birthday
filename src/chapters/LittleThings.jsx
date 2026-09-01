@@ -31,7 +31,11 @@ import { useIsTouch } from '../hooks/useMediaQuery.js';
    RosePetals plate in Atmosphere.jsx supplies the drift.
    ══════════════════════════════════════════════════════════════════ */
 
-const GROUND_SRC = '/images/Dreamy Rose Garden Portrait.png';
+/* The file's own name carries spaces. Browsers encode them when
+   they resolve the attribute, but CDNs and static hosts are far
+   less consistent about the raw form, so the URL is written the
+   way it goes on the wire. Same file, renamed nowhere. */
+const GROUND_SRC = '/images/Dreamy%20Rose%20Garden%20Portrait.png';
 
 export function LittleThings() {
   const [open, setOpen] = useState(null);

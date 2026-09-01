@@ -349,7 +349,10 @@ export function RoseReveal() {
 
           {/* ── RIGHT — the photograph in a glowing frame ──────── */}
           <motion.div
-            className="order-2 flex min-w-0 items-center justify-center md:h-full md:justify-end"
+            /* Right-aligned in its column; a small desktop-only nudge
+               left brings the photograph closer to the centre of the
+               scene. Stacked layouts are untouched. */
+            className="order-2 flex min-w-0 items-center justify-center md:h-full md:justify-end lg:-translate-x-6 xl:-translate-x-10"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
