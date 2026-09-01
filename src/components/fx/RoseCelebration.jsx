@@ -237,8 +237,24 @@ function RoseCelebrationBase({ visible = true, burst = true }) {
           inside one screen at 320px and at 1440px alike, and never
           needs to scroll. */}
       <div className="absolute inset-0 flex items-center justify-center px-6 py-[clamp(1rem,5svh,3rem)]">
+        {/* On a wide screen the photograph is in the right column and
+            the message lands on dark ground. Below `lg` the chapter is
+            a stack, so the photograph is exactly what the message sits
+            on — sunlit greenery under ivory serif. A plate of the same
+            centre-warm, edge-dark light the veil above already uses
+            gives it back its ground, without touching the desktop
+            composition. */}
         <div
-          className="flex w-full max-w-[34rem] flex-col items-center text-center sm:max-w-[40rem]"
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-[min(78svh,44rem)] -translate-y-1/2 lg:hidden"
+          style={{
+            background:
+              'radial-gradient(72% 50% at 50% 50%, rgba(12,5,12,0.9), rgba(12,5,12,0.72) 58%, transparent 82%)',
+          }}
+          aria-hidden="true"
+        />
+
+        <div
+          className="relative flex w-full max-w-[34rem] flex-col items-center text-center sm:max-w-[40rem]"
           style={{ gap: 'clamp(0.65rem, 2.2svh, 1.6rem)' }}
         >
           <h2

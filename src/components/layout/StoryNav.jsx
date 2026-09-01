@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useAudio } from '../../hooks/audioContext.js';
 import { HeartIcon } from '../ui/HeartIcon.jsx';
+import { MobileNav } from './MobileNav.jsx';
 import { copy } from '../../content/copy.js';
 import { site } from '../../content/site.config.js';
 
@@ -19,6 +20,11 @@ import { site } from '../../content/site.config.js';
 
    `Home` is marked current unconditionally, and correctly so: this
    masthead only exists while Chapter 01 fills the screen.
+
+   Below `lg` the six links do not fit across the top, so they fold
+   into <MobileNav>'s sheet — the same list, the same jump, the same
+   song control. Nothing at `lg` and above changes: the links, the
+   pill and the heart render exactly as they always have.
    ══════════════════════════════════════════════════════════════════ */
 
 /* A rose seen from above, reduced to two rings and a heart — the
@@ -60,15 +66,15 @@ function StoryNavBase() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
-    <header className="relative flex w-full items-center justify-between gap-6">
+    <header className="relative flex w-full items-center justify-between gap-3 sm:gap-6">
       {/* ── Wordmark ─────────────────────────────────────────── */}
       <a
         href="#garden"
-        className="group flex shrink-0 items-center gap-2.5"
+        className="group flex min-h-[44px] shrink-0 items-center gap-2.5"
         aria-label={site.brand}
       >
         <RoseMark className="transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-12" />
-        <span className="t-display text-[clamp(1.1rem,2.2vw,1.5rem)] tracking-tight">
+        <span className="t-display text-[clamp(0.95rem,4vw,1.5rem)] tracking-tight sm:text-[clamp(1.1rem,2.2vw,1.5rem)]">
           <span className="text-rose-soft">Rozana</span>{' '}
           <span className="text-paper">Blosem</span>
         </span>
@@ -107,12 +113,22 @@ function StoryNavBase() {
         })}
       </nav>
 
-      {/* ── Song pill + heart ────────────────────────────────── */}
-      <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+      {/* ── Song pill + heart ──────────────────────────────────
+             The pill's label is what makes this group 158px wide,
+             which is more than 320px has left once the wordmark and
+             the menu are placed — so below `sm` the pill keeps the
+             note and drops the words. Everything from `sm` up is the
+             pill exactly as it was.
+
+             The heart is the desktop flourish and stays there; below
+             `lg` the menu takes its place in the row, and the heart
+             reappears at the foot of the sheet. */}
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:gap-4">
         <button
           onClick={toggle}
           aria-pressed={isPlaying}
-          className="group relative inline-flex min-h-[40px] items-center gap-2.5 rounded-full border border-rose-soft/40 px-4 text-champagne-light transition-colors duration-500 hover:border-rose-soft/70 sm:px-6"
+          aria-label={copy.garden.song}
+          className="group relative inline-flex h-11 min-h-[44px] w-11 items-center justify-center gap-2.5 rounded-full border border-rose-soft/40 px-0 text-champagne-light transition-colors duration-500 hover:border-rose-soft/70 sm:h-auto sm:min-h-[40px] sm:w-auto sm:px-6"
         >
           <span
             className="pointer-events-none absolute inset-0 rounded-full opacity-60 transition-opacity duration-500 group-hover:opacity-100"
@@ -120,12 +136,14 @@ function StoryNavBase() {
             aria-hidden="true"
           />
           <NoteIcon />
-          <span className="font-sans text-[0.625rem] uppercase tracking-[0.24em] sm:text-[0.6875rem]">
+          <span className="hidden font-sans text-[0.625rem] uppercase tracking-[0.24em] sm:inline sm:text-[0.6875rem]">
             {copy.garden.song}
           </span>
         </button>
 
-        <span className="text-rose-mist/85" aria-hidden="true">
+        <MobileNav />
+
+        <span className="hidden text-rose-mist/85 lg:block" aria-hidden="true">
           <HeartIcon size={17} />
         </span>
       </div>

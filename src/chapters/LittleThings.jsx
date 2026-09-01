@@ -122,7 +122,7 @@ export function LittleThings() {
         {/* ── The six thoughts ─────────────────────────────────
             A fixed grid: the rows share whatever height is left, so
             a thought opening inside a pane cannot move anything. */}
-        <ul className="relative mt-auto grid h-[68svh] shrink-0 grid-cols-1 grid-rows-6 gap-1 sm:h-auto sm:min-h-0 sm:max-h-[440px] sm:flex-1 sm:shrink sm:grid-cols-2 sm:grid-rows-3 sm:gap-2.5 lg:mt-6 lg:max-h-[548px] lg:gap-3">
+        <ul className="relative mt-auto grid h-[60svh] shrink-0 grid-cols-1 grid-rows-6 gap-1.5 sm:h-auto sm:min-h-0 sm:max-h-[440px] sm:flex-1 sm:shrink sm:grid-cols-2 sm:grid-rows-3 sm:gap-2.5 lg:mt-6 lg:max-h-[548px] lg:gap-3">
           {littleThings.map((item, i) => (
             <motion.li
               key={item.id}
@@ -150,7 +150,7 @@ export function LittleThings() {
       <Reveal delay={0.9} className="flex h-[clamp(44px,8svh,76px)] shrink-0 items-center justify-center lg:justify-end lg:pr-[130px] xl:pr-[200px]">
         <button
           onClick={scrollToLetter}
-          className="group -my-3 inline-flex items-center gap-3 py-3 text-champagne"
+          className="group -my-3 inline-flex min-h-[44px] items-center gap-3 py-3 text-champagne"
           style={{ filter: 'drop-shadow(0 1px 5px rgba(5,3,8,0.95))' }}
         >
           <span className="font-sans text-[0.55rem] uppercase tracking-[0.3em] sm:text-[0.6rem] sm:tracking-[0.32em]">
@@ -192,7 +192,7 @@ function Thought({ item, index, isOpen, dimmed, onToggle, reduced, isTouch }) {
     <motion.button
       onClick={onToggle}
       aria-expanded={isOpen}
-      className="thought-pane group relative flex h-full w-full flex-col overflow-hidden rounded-[3px] px-3 py-1.5 text-left sm:px-4 sm:py-3 lg:px-4 lg:py-3 xl:px-5"
+      className="thought-pane group relative flex h-full w-full flex-col overflow-hidden rounded-[3px] px-3.5 py-2 text-left sm:px-4 sm:py-3 lg:px-4 lg:py-3 xl:px-5"
       data-open={isOpen ? 'true' : undefined}
       animate={{ opacity: dimmed ? 0.42 : 1 }}
       transition={{ duration: 0.5, ease: EASE.silk }}
@@ -217,7 +217,7 @@ function Thought({ item, index, isOpen, dimmed, onToggle, reduced, isTouch }) {
         </motion.span>
       </span>
 
-      <span className="t-display relative mt-1 block shrink-0 text-[clamp(0.72rem,1.35vw,1rem)] italic leading-[1.32] text-paper/92">
+      <span className="t-display relative mt-1 block shrink-0 text-[clamp(0.8rem,1.35vw,1rem)] italic leading-[1.32] text-paper/92">
         {`“${item.label}”`}
       </span>
 
@@ -227,7 +227,7 @@ function Thought({ item, index, isOpen, dimmed, onToggle, reduced, isTouch }) {
           {isOpen && (
             <motion.span
               key="body"
-              className="t-body block text-[clamp(0.6rem,1.02vw,0.76rem)] leading-[1.42]"
+              className="t-body block text-[clamp(0.7rem,1.02vw,0.76rem)] leading-[1.5]"
               initial={reduced ? { opacity: 0 } : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, y: -6 }}

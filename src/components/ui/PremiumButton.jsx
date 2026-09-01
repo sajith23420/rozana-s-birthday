@@ -40,9 +40,12 @@ export function PremiumButton({
     if (el) el.style.transform = 'translate3d(0, 0, 0)';
   }, []);
 
+  /* Phone widths get a tighter pill: at 320px the `lg` button was
+     305px wide, edge to edge and outside its own gutter. Every
+     override stops at `sm`, so nothing at 640px and above moves. */
   const sizes = {
-    md: 'min-h-[48px] px-8 text-[0.6875rem]',
-    lg: 'min-h-[56px] px-10 sm:px-14 text-[0.75rem]',
+    md: 'min-h-[48px] px-6 text-[0.65rem] sm:px-8 sm:text-[0.6875rem]',
+    lg: 'min-h-[56px] px-6 text-[0.6875rem] sm:px-14 sm:text-[0.75rem]',
   };
 
   return (
@@ -55,7 +58,7 @@ export function PremiumButton({
       transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       className={cn(
         'group relative inline-flex items-center justify-center overflow-hidden rounded-full',
-        'font-sans font-medium uppercase tracking-[0.3em]',
+        'font-sans font-medium uppercase tracking-[0.2em] sm:tracking-[0.3em]',
         'transition-[transform] duration-300 ease-out',
         sizes[size],
         variant === 'outline' &&

@@ -9,6 +9,7 @@ import { stars, constellation } from '../content/stars.js';
 import { copy } from '../content/copy.js';
 import { EASE } from '../lib/easing.js';
 import { useReducedMotion } from '../hooks/useReducedMotion.js';
+import { useMediaQuery } from '../hooks/useMediaQuery.js';
 import { seeded } from '../lib/utils.js';
 
 /* ══════════════════════════════════════════════════════════════════
@@ -24,6 +25,15 @@ import { seeded } from '../lib/utils.js';
    lighting the constellation segment, and the bottom panel shows
    the full note.
 
+   Below `lg` the sky has the whole screen rather than the right two
+   thirds of one, and the desktop scatter puts those labels on top of
+   each other — so narrow screens read the same nine stars from
+   `star.m`: the chain walks down the frame, each label hangs off the
+   side its star leans away from, and the note excerpt is dropped
+   because the panel underneath is already carrying it in full. The
+   concept, the interaction and the constellation order are the same;
+   only the coordinates are read differently.
+
    Performance: To preserve frame rate and avoid heavy global
    repaints, the background atmosphere is lightweight. Most distant
    stars are static SVG circles; only a small fraction use motion.
@@ -32,7 +42,7 @@ import { seeded } from '../lib/utils.js';
 
 const PORTRAIT_SRC = '/images/rose.jpeg';
 
-/* ── Per-star label offsets ────────────────────────────────────── */
+/* ── Per-star label offsets, `lg` and above ────────────────────── */
 const LABEL_META = [
   /* s1  x:14 y:26 */ { dx: 0, dy: 3, align: 'left' },
   /* s2  x:29 y:14 */ { dx: 0, dy: 3, align: 'left' },
@@ -49,6 +59,10 @@ export function StarMap() {
   const [found, setFound] = useState(() => new Set());
   const [open, setOpen] = useState(null);
   const reduced = useReducedMotion();
+  /* The desktop constellation owns everything from `lg`; below it the
+     map is read from `star.m`. */
+  const compact = !useMediaQuery('(min-width: 1024px)');
+  const at = (star) => (compact ? star.m : star);
 
   /* Only generate ~80 background stars, and only animate 15 of them.
      This massively reduces React/Framer motion overhead. */
@@ -82,14 +96,16 @@ export function StarMap() {
       const a = stars[constellation[i]];
       const b = stars[constellation[i + 1]];
       if (!a || !b) continue;
+      const pa = compact ? a.m : a;
+      const pb = compact ? b.m : b;
       segs.push({
         key: `${a.id}-${b.id}-${i}`,
-        a, b,
+        a: pa, b: pb,
         lit: found.has(a.id) && found.has(b.id),
       });
     }
     return segs;
-  }, [found]);
+  }, [found, compact]);
 
   const complete = found.size === stars.length;
 
@@ -174,7 +190,7 @@ export function StarMap() {
         {/* ── The sky ─────────────────────────────────────────
             Enlarged container to make the Star Map the primary focus. */}
         <div className="relative mx-auto mt-3 flex min-h-0 w-full max-w-[1100px] flex-1 flex-col sm:mt-5">
-          <div className="relative h-[clamp(300px,42dvh,500px)] w-full shrink-0">
+          <div className="relative h-[clamp(300px,47dvh,500px)] w-full shrink-0 lg:h-[clamp(300px,42dvh,500px)]">
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
@@ -251,8 +267,10 @@ export function StarMap() {
             {stars.map((star, i) => {
               const isFound = found.has(star.id);
               const isOpen = open?.id === star.id;
-              const near = open
-                ? Math.hypot(open.x - star.x, open.y - star.y) < 26 && !isOpen
+              const pos = at(star);
+              const openPos = open ? at(open) : null;
+              const near = openPos
+                ? Math.hypot(openPos.x - pos.x, openPos.y - pos.y) < 26 && !isOpen
                 : false;
 
               return (
@@ -261,8 +279,8 @@ export function StarMap() {
                   onClick={() => select(star)}
                   className="absolute flex items-center justify-center rounded-full"
                   style={{
-                    left: `${star.x}%`,
-                    top: `${star.y}%`,
+                    left: `${pos.x}%`,
+                    top: `${pos.y}%`,
                     width: 48,
                     height: 48,
                     transform: 'translate(-50%, -50%)',
@@ -285,7 +303,7 @@ export function StarMap() {
                         'radial-gradient(circle, rgba(217,190,142,0.42) 0%, transparent 66%)',
                     }}
                     animate={{
-                      opacity: isOpen ? 1 : near ? 0.7 : isFound ? 0.45 : 0.15,
+                      opacity: isOpen ? 1 : near ? 0.7 : isFound ? 0.45 : compact ? 0.3 : 0.15,
                       scale: isOpen ? 1.8 : near ? 1.3 : 1,
                     }}
                     transition={{ duration: 0.7, ease: EASE.silk }}
@@ -295,8 +313,8 @@ export function StarMap() {
                     className="relative block rounded-full"
                     style={{ background: '#f5efe9' }}
                     animate={{
-                      width: (isOpen ? 10 : isFound ? 7 : 4.5) * star.mag,
-                      height: (isOpen ? 10 : isFound ? 7 : 4.5) * star.mag,
+                      width: (isOpen ? 10 : isFound ? 7 : compact ? 6 : 4.5) * star.mag,
+                      height: (isOpen ? 10 : isFound ? 7 : compact ? 6 : 4.5) * star.mag,
                       boxShadow: isOpen
                         ? '0 0 20px 4px rgba(232,160,176,0.8), 0 0 40px 10px rgba(200,85,110,0.3)'
                         : isFound
@@ -310,18 +328,53 @@ export function StarMap() {
               );
             })}
 
-            {/* Always-visible star labels — slightly enlarged for readability */}
+            {/* Always-visible star labels.
+
+                From `lg` the label sits just below its star, exactly
+                as it always has. Below `lg` it hangs off the side the
+                star leans away from — measured from that edge, and
+                capped so it can neither reach the frame edge nor the
+                next star's label — and vertically centred on the star
+                rather than dropped underneath it. */}
             {stars.map((star, i) => {
               const meta = LABEL_META[i];
               const isOpen = open?.id === star.id;
+              const pos = at(star);
+              const toLeft = compact && star.m.side === 'l';
+
+              const place = compact
+                ? {
+                    top: `${pos.y}%`,
+                    transform: 'translateY(-50%)',
+                    textAlign: toLeft ? 'right' : 'left',
+                    /* The 24px in these offsets is the star's, not a
+                       margin. Its button carries `transform:
+                       translate(-50%,-50%)` in `style`, but it is a
+                       motion.button that also animates `scale`, and
+                       Framer owns `transform` outright — so the
+                       translate never lands and the star actually sits
+                       half its 48px box to the right of `pos.x`. The
+                       `lg` offsets in LABEL_META were hand-tuned
+                       against that same rendered position, which is why
+                       they read oddly too. Correcting the button would
+                       move every desktop star, so the offset is
+                       absorbed here instead. */
+                    ...(toLeft
+                      ? { right: `calc(${100 - pos.x}% - 7px)`, maxWidth: `min(${pos.x}% - 15px, 190px)` }
+                      : { left: `calc(${pos.x}% + 41px)`, maxWidth: `min(${100 - pos.x}% - 49px, 190px)` }),
+                  }
+                : {
+                    left: `${pos.x + meta.dx}%`,
+                    top: `${pos.y + meta.dy}%`,
+                    textAlign: meta.align,
+                  };
+
               return (
                 <motion.div
                   key={`lbl-${star.id}`}
                   className="pointer-events-none absolute select-none"
                   style={{
-                    left: `${star.x + meta.dx}%`,
-                    top: `${star.y + meta.dy}%`,
-                    textAlign: meta.align,
+                    ...place,
                     textShadow: '0 1px 6px rgba(5,3,8,0.95), 0 0 10px rgba(5,3,8,0.7)',
                   }}
                   initial={{ opacity: 0, y: 6 }}
@@ -329,17 +382,20 @@ export function StarMap() {
                   viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.9, delay: 0.3 + i * 0.08, ease: EASE.silk }}
                 >
-                  <span className="t-numeral block text-[0.58rem] text-champagne/70 sm:text-[0.7rem]">
+                  <span className="t-numeral block text-[0.6rem] text-champagne/70 lg:text-[0.7rem]">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <motion.span
-                    className="t-display mt-px block max-w-[104px] text-[0.62rem] leading-tight italic sm:max-w-[180px] sm:text-[0.85rem]"
+                    className="t-display mt-px block text-[0.82rem] leading-tight italic lg:max-w-[180px] lg:text-[0.85rem]"
                     animate={{ color: isOpen ? '#e8a0b0' : '#f5efe9' }}
                     transition={{ duration: 0.5 }}
                   >
                     {star.title}
                   </motion.span>
-                  <span className="mt-0.5 block max-w-[100px] truncate font-sans text-[0.5rem] leading-snug text-paper-dim/60 sm:max-w-[170px] sm:text-[0.68rem]">
+                  {/* The excerpt is the panel's job on a narrow screen —
+                      repeating a truncated copy of it beside every star
+                      is what made the labels collide. */}
+                  <span className="mt-0.5 hidden max-w-[170px] truncate font-sans text-[0.68rem] leading-snug text-paper-dim/60 lg:block">
                     {star.note}
                   </span>
                 </motion.div>
@@ -408,11 +464,14 @@ export function StarMap() {
 
       {/* ── Bottom navigation ────────────────────────────────────
           Outside the padding so it spans the full width. */}
-      <Reveal delay={0.9} className="flex h-[clamp(56px,10dvh,92px)] shrink-0 items-center lg:pr-[220px]">
-        <div className="flex w-full items-center justify-between gap-4">
+      <Reveal delay={0.9} className="flex min-h-[clamp(56px,10dvh,92px)] shrink-0 items-center lg:pr-[220px]">
+        {/* Set end to end the two labels are wider than 320px, so the
+            narrowest screens read them as a stack. The band it sits in
+            is elastic, so nothing below is pushed off. */}
+        <div className="flex w-full flex-col items-center gap-3 py-1 sm:flex-row sm:justify-between sm:gap-4 sm:py-0">
           <button
             onClick={scrollToGarden}
-            className="group -my-3 inline-flex items-center gap-3 py-3 text-champagne"
+            className="group -my-3 inline-flex min-h-[44px] items-center gap-3 py-3 text-champagne"
             style={{ filter: 'drop-shadow(0 1px 5px rgba(5,3,8,0.95))' }}
           >
             <span className="font-sans text-[0.55rem] uppercase tracking-[0.28em] sm:text-[0.6rem] sm:tracking-[0.32em]">
@@ -436,7 +495,7 @@ export function StarMap() {
             </motion.span>
           </button>
 
-          <div className="flex flex-col items-center gap-1.5 sm:gap-2.5">
+          <div className="flex flex-col items-center gap-1 sm:gap-2.5">
             <span
               className="block text-[11px] text-champagne/50"
               aria-hidden="true"
@@ -446,7 +505,7 @@ export function StarMap() {
             </span>
             <button
               onClick={scrollToLittle}
-              className="group -my-3 inline-flex items-center gap-3 py-3 text-champagne"
+              className="group -my-3 inline-flex min-h-[44px] items-center gap-3 py-3 text-champagne"
               style={{ filter: 'drop-shadow(0 1px 5px rgba(5,3,8,0.95))' }}
             >
               <span className="font-sans text-[0.55rem] uppercase tracking-[0.28em] sm:text-[0.6rem] sm:tracking-[0.32em]">
