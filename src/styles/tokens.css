@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════════
+   ROZY — A LITTLE WORLD MADE FOR YOU
+   Design tokens. Midnight / burgundy / rose / champagne.
+   ══════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* — Type ——————————————————————————————————— */
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* — Ground ————————————————————————————————— */
+  --color-void: #050308;
+  --color-midnight: #07050d;
+  --color-ink: #0c0710;
+
+  /* — Burgundy ——————————————————————————————— */
+  --color-wine-900: #1a0710;
+  --color-wine-800: #2b0a14;
+  --color-wine-700: #3d0f1e;
+  --color-wine-600: #58152a;
+
+  /* — Rose ———————————————————————————————————— */
+  --color-rose-deep: #a8425a;
+  --color-rose: #c8556e;
+  --color-rose-soft: #e8a0b0;
+  --color-rose-mist: #f3d3da;
+
+  /* — Champagne —————————————————————————————— */
+  --color-champagne: #d9be8e;
+  --color-champagne-light: #f0dfc0;
+  --color-champagne-dim: #8c7752;
+
+  /* — Paper / text ——————————————————————————— */
+  --color-paper: #f5efe9;
+  --color-paper-dim: #b9b0aa;
+  --color-paper-faint: #6f6862;
+  --color-parchment: #efe6d8;
+
+  /* — Motion ————————————————————————————————— */
+  --ease-silk: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-veil: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-bloom: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Layer order, kept in one place so nothing fights for the top. */
+:root {
+  --z-fx: 1;
+  --z-content: 10;
+  --z-cursor: 50;
+  --z-rail: 60;
+  --z-dock: 70;
+  --z-grain: 90;
+  --z-gate: 100;
+}

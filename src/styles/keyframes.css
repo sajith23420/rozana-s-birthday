@@ -1,0 +1,161 @@
+/* ══════════════════════════════════════════════════════════════════
+   Keyframes — only the ambient loops that would be wasteful in JS.
+   Everything interactive is driven by Framer Motion.
+   ══════════════════════════════════════════════════════════════════ */
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 0.7;  transform: scale(1.06); }
+}
+@layer components { .anim-breathe { animation: breathe 7s var(--ease-veil) infinite; } }
+
+@keyframes drift-slow {
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(2.5%, -2%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+@layer components { .anim-drift { animation: drift-slow 26s ease-in-out infinite; } }
+
+@keyframes shimmer-sweep {
+  0%   { background-position: -180% 0; }
+  100% { background-position: 280% 0; }
+}
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.5; }
+  42%      { opacity: 0.95; }
+  57%      { opacity: 0.32; }
+  78%      { opacity: 0.8; }
+}
+
+/* ── Phase 2 additions ─────────────────────────────────────────── */
+
+/* Floating dust — a slow upward meander for entrance particles. */
+@keyframes dust-float {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0; }
+  15%  { opacity: 0.6; }
+  50%  { transform: translate3d(4px, -18px, 0) scale(1.1); opacity: 0.4; }
+  85%  { opacity: 0.15; }
+  100% { transform: translate3d(-2px, -36px, 0) scale(0.85); opacity: 0; }
+}
+
+/* Breathing volumetric light behind the rose. */
+@keyframes volumetric-pulse {
+  0%, 100% { opacity: 0.22; transform: scale(0.94); }
+  50%      { opacity: 0.48; transform: scale(1.08); }
+}
+
+/* Animated grain — shift the noise texture in a small loop. */
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0, 0); }
+  10%      { transform: translate(-2%, -3%); }
+  30%      { transform: translate(3%, -1%); }
+  50%      { transform: translate(-1%, 2%); }
+  70%      { transform: translate(2%, 1%); }
+  90%      { transform: translate(-3%, -2%); }
+}
+
+/* Star twinkle — a softer, slower pulse for distant stars. */
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  35%      { opacity: 0.85; transform: scale(1.15); }
+  65%      { opacity: 0.45; transform: scale(0.95); }
+}
+
+/* Simple sine waveform for the Song Room visualiser. */
+@keyframes waveform-idle {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1); }
+}
+
+/* Champagne sweep across a display line — used once, at the climax. */
+@layer components {
+.text-sheen {
+  background: linear-gradient(
+    100deg,
+    var(--color-paper) 22%,
+    var(--color-champagne-light) 40%,
+    var(--color-champagne) 50%,
+    var(--color-paper) 68%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer-sweep 6.5s linear infinite;
+}
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Rose petals — the global decorative drift (components/fx/RosePetals).
+
+   Four patterns so no two petals move alike. Every one animates only
+   `transform` and `opacity`, both compositor properties, so the loop
+   never touches layout or paint. Nothing here animates top/left/size.
+
+   Each petal supplies its own peak opacity as --petal-o, which keeps
+   the fade-in and fade-out shared while the level stays per-petal.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* A — a slow fall, drifting sideways as it tumbles. */
+@keyframes petal-fall {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  10%  { opacity: var(--petal-o, 0.2); }
+  85%  { opacity: var(--petal-o, 0.2); }
+  100% { transform: translate3d(7vw, 130vh, 0) rotate(310deg); opacity: 0; }
+}
+
+/* B — the reverse: lifting away, as if caught by warm air. */
+@keyframes petal-rise {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  14%  { opacity: var(--petal-o, 0.2); }
+  82%  { opacity: var(--petal-o, 0.2); }
+  100% { transform: translate3d(-5vw, -128vh, 0) rotate(-240deg); opacity: 0; }
+}
+
+/* C — a long diagonal crossing, barely turning. */
+@keyframes petal-drift {
+  0%   { transform: translate3d(-4vw, 0, 0) rotate(-12deg); opacity: 0; }
+  18%  { opacity: var(--petal-o, 0.2); }
+  80%  { opacity: var(--petal-o, 0.2); }
+  100% { transform: translate3d(11vw, 26vh, 0) rotate(96deg); opacity: 0; }
+}
+
+/* D — almost stationary: a suspended petal breathing in place. */
+@keyframes petal-hover {
+  0%,
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: calc(var(--petal-o, 0.2) * 0.35); }
+  30%  { transform: translate3d(2vw, -3vh, 0) rotate(28deg); opacity: var(--petal-o, 0.2); }
+  65%  { transform: translate3d(-1.5vw, 2.5vh, 0) rotate(-16deg); opacity: calc(var(--petal-o, 0.2) * 0.7); }
+}
+
+@layer components {
+  .rose-petal {
+    /* Petal silhouette: round at the lip, tapering to a point at the
+       base. The gradient fades to nothing at the edge, so the shape
+       reads as soft without a filter on every element. */
+    border-radius: 68% 4% 68% 4%;
+    background: radial-gradient(
+      118% 96% at 32% 26%,
+      rgba(232, 160, 176, 0.92) 0%,
+      rgba(200, 85, 110, 0.72) 42%,
+      rgba(88, 21, 42, 0) 76%
+    );
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    animation-iteration-count: infinite;
+    will-change: transform, opacity;
+  }
+}
+
+/* Unlayered on purpose, matching the reduced-motion block in base.css:
+   the drift stops entirely and the petals settle into faint static
+   texture rather than freezing at whatever keyframe they were on. */
+@media (prefers-reduced-motion: reduce) {
+  .rose-petal {
+    animation: none !important;
+    opacity: 0.1;
+    transform: none !important;
+  }
+}

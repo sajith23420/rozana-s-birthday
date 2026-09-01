@@ -1,0 +1,278 @@
+/* ══════════════════════════════════════════════════════════════════
+   Base — reset, ground, atmosphere.
+
+   Everything here is inside @layer, deliberately. Tailwind v4 emits
+   all of its output into cascade layers, and unlayered CSS beats
+   every layer regardless of specificity — so an unlayered
+   `button { border: 0 }` would silently kill `border-champagne/35`
+   on every button in the project.
+   ══════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    background: var(--color-void);
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-void);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
+  }
+
+  /* The layout needs no horizontal escape hatch, but a stray
+     translated particle must not be able to widen the page either. */
+  body, #root { overflow-x: clip; }
+
+  #root { isolation: isolate; }
+
+  img, svg, video { display: block; max-width: 100%; }
+
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0 solid transparent;
+    cursor: pointer;
+  }
+
+  ::selection { background: var(--color-rose-deep); color: var(--color-paper); }
+
+  /* Scrollbar: a thin champagne hairline */
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-champagne) 34%, transparent);
+    border-radius: 99px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-champagne) 34%, transparent) transparent;
+  }
+
+  /* Focus: visible, and in the palette */
+  :focus-visible {
+    outline: 1px solid var(--color-champagne);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* — Typographic primitives ———————————————————————— */
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 300;
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+  }
+
+  /* Hero display — huge, editorial, dramatic. */
+  .t-display-hero {
+    font-family: var(--font-display);
+    font-weight: 300;
+    line-height: 0.88;
+    letter-spacing: -0.035em;
+  }
+
+  .t-eyebrow {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: clamp(0.5rem, 1.6vw, 0.625rem);
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--color-champagne);
+  }
+
+  .t-body {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--color-paper-dim);
+  }
+
+  .t-numeral {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-style: italic;
+    letter-spacing: 0.04em;
+  }
+
+  /* Fluid display sizes — one scale, used by every chapter. */
+  .t-hero { font-size: clamp(3.5rem, 14vw, 11rem); }
+  .t-xl { font-size: clamp(2.75rem, 11vw, 8.5rem); }
+  .t-lg { font-size: clamp(2.25rem, 8vw, 5.5rem); }
+  .t-md { font-size: clamp(1.75rem, 5.5vw, 3.5rem); }
+
+  /* The closing headline is the one piece of type that must share a single
+     viewport with a message, a signature and a button. Width alone cannot
+     decide its size — on a short, wide laptop a width-driven clamp pushes
+     the signature off the bottom of the screen. Taking the smaller of a
+     width and a height measure keeps the whole composition on one screen at
+     every aspect ratio, while still reading as a hero on a tall phone. */
+  .t-final { font-size: clamp(2.15rem, min(9.5vw, 7.4svh), 5.75rem); }
+
+  /* Chapter 03 shares one viewport with a constellation, a message
+     panel and the bottom controls, so the headline is taken from the
+     smaller of a width and a height measure — the same trick as
+     .t-final, tuned for a shorter budget. */
+  .t-star { font-size: clamp(1.5rem, min(6.5vw, 6.4dvh), 3.5rem); }
+
+  /* Chapter 05 sits on one cinematic screen alongside six thought
+     panes and the bottom control, so its headline is measured the
+     same way — the smaller of a width and a height reading. */
+  .t-thought { font-size: clamp(1.35rem, min(5.4vw, 5.6svh), 3rem); }
+
+  /* — Surfaces (used sparingly, never a glass casserole) ——— */
+  .surface-veil {
+    background: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-wine-800) 40%, transparent),
+      color-mix(in srgb, var(--color-void) 70%, transparent)
+    );
+    border: 1px solid color-mix(in srgb, var(--color-champagne) 14%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--color-champagne) 55%, transparent),
+      transparent
+    );
+  }
+
+  .glow-rose { filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-rose) 45%, transparent)); }
+  .glow-gold { filter: drop-shadow(0 0 18px color-mix(in srgb, var(--color-champagne) 38%, transparent)); }
+
+  /* Emoji sit inside serif display type and inside gradient-filled
+     text. Both need an opt-out: no background clip, and a slightly
+     smaller optical size so they do not shout over the letterforms. */
+  .glyph-plain {
+    /* `initial` resolves to currentColor, which inherits the
+       transparent fill that .text-sheen relies on — the emoji would
+       stay invisible. An explicit opaque colour is required. */
+    color: var(--color-paper);
+    -webkit-text-fill-color: var(--color-paper);
+    background: none;
+    font-size: 0.72em;
+    line-height: 1;
+    vertical-align: 0.06em;
+  }
+
+  /* ── Phase 2: cinematic overlays ────────────────────────── */
+
+  /* Film grain that animates subtly. Apply to a full-bleed overlay. */
+  .film-grain {
+    background-image: url(/images/texture-noise.svg);
+    background-size: 280px 280px;
+    animation: grain-shift 3.5s steps(6) infinite;
+  }
+
+  /* Cinematic vignette — darker, more theatrical falloff. */
+  .cinematic-vignette {
+    background: radial-gradient(
+      ellipse at 50% 45%,
+      transparent 38%,
+      rgba(3, 2, 6, 0.48) 72%,
+      rgba(3, 2, 6, 0.82) 100%
+    );
+  }
+
+  /* Frame edges for the film strip — burnt-edge look. */
+  .frame-edge {
+    box-shadow:
+      inset 0 0 24px 4px rgba(5, 3, 8, 0.65),
+      inset 0 0 2px 0 rgba(5, 3, 8, 0.4);
+  }
+
+  /* ── Chapter 03 portrait ─────────────────────────────────
+     Soft atmospheric dissolve: the face (left/upper-center) stays
+     sharp, while all edges (especially right and bottom) fade softly
+     into the page darkness. No hard rectangular boundaries. */
+  .star-portrait {
+    -webkit-mask-image: radial-gradient(ellipse at 40% 40%, black 20%, rgba(0,0,0,0.6) 45%, transparent 75%);
+    mask-image: radial-gradient(ellipse at 40% 40%, black 20%, rgba(0,0,0,0.6) 45%, transparent 75%);
+  }
+
+  /* ── Chapter 02 hero photograph ──────────────────────────
+     The artwork runs at full strength; nothing dims it. The only
+     treatment is a feather on the single edge where the photograph
+     meets the editorial column on wide screens.
+
+     Narrow screens need no mask at all: the panel spans the full
+     width there, so its left and right edges are the viewport edges,
+     and its top edge is handled by the readability gradient. */
+  .hero-photo {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  /* ── Chapter 05 thought panes ────────────────────────────
+     Floating memories rather than cards: a thin warm-gold edge over
+     a burgundy veil, and a glow that is revealed with opacity alone
+     so hovering costs nothing but a composite. */
+  .thought-pane {
+    background:
+      linear-gradient(152deg,
+        color-mix(in srgb, var(--color-wine-800) 46%, transparent),
+        color-mix(in srgb, var(--color-void) 42%, transparent));
+    border: 1px solid color-mix(in srgb, var(--color-champagne) 13%, transparent);
+    transition: border-color 0.55s var(--ease-silk);
+  }
+
+  .thought-pane:hover,
+  .thought-pane:focus-visible {
+    border-color: color-mix(in srgb, var(--color-champagne) 30%, transparent);
+  }
+
+  .thought-pane[data-open] {
+    border-color: color-mix(in srgb, var(--color-rose) 42%, transparent);
+  }
+
+  .thought-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.7s var(--ease-silk);
+    background: radial-gradient(90% 130% at 0% 0%, rgba(200, 85, 110, 0.14), transparent 68%);
+  }
+
+  .thought-pane:hover .thought-glow,
+  .thought-pane:focus-visible .thought-glow,
+  .thought-pane[data-open] .thought-glow {
+    opacity: 1;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-photo {
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.5) 9%, #000 20%, #000 100%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,.5) 9%, #000 20%, #000 100%);
+    }
+  }
+}
+
+/* — Reduced motion ———————————————————————————————————
+   Everything still reveals; it simply stops moving. Unlayered on
+   purpose, so it outranks anything that tries to animate. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
