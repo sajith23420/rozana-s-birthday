@@ -92,6 +92,15 @@ export const images = {
     alt: 'The two of us close together at golden hour, pink petals in the air',
     caption: 'And somehow, my favourite memories became the ones with you. ❤️',
   },
+
+  /* The closing photograph of Chapter 08 · 960 x 1280 — both faces
+     sit across the upper middle, so the crop is held high. */
+  finalMoment: {
+    src: '/images/rr.jpeg',
+    ratio: '3/4',
+    focus: '50% 30%',
+    alt: 'The two of us together, smiling, with sunlit greenery behind',
+  },
 };
 
 /* Ordered reel for the Memory Film chapter — this is the story order. */

@@ -29,6 +29,13 @@ export function SplitText({
   const lines = String(text).split('\n');
   const Tag = motion[as] ?? motion.h2;
 
+  /* `lineClassName` may be a function of the line index, so a headline
+     can colour its lines differently without being split into several
+     SplitTexts — which would break the shared stagger. */
+  const lineClass = typeof lineClassName === 'function'
+    ? lineClassName
+    : () => lineClassName;
+
   const lineVariants = {
     hidden: reduced ? { opacity: 0 } : { y: '108%', opacity: 0 },
     show: (i) => ({
@@ -51,7 +58,7 @@ export function SplitText({
       {lines.map((line, i) => (
         <span key={i} className="block overflow-hidden pb-[0.12em]">
           <motion.span
-            className={`block ${lineClassName}`}
+            className={`block ${lineClass(i)}`}
             variants={lineVariants}
             custom={i}
           >

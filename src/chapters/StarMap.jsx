@@ -134,7 +134,7 @@ export function StarMap() {
               Uses object-contain to avoid stretching. Masking happens
               via .star-portrait in base.css. No expensive blurs. */}
           <div
-            className="pointer-events-none absolute left-[-6%] top-[38%] w-[50%] -translate-y-1/2 sm:left-0 sm:top-[46%] sm:w-[34%] lg:left-[1%] lg:top-1/2 lg:w-[28vw] lg:max-w-[440px] xl:left-[2%] xl:w-[30vw] xl:max-w-[460px]"
+            className="pointer-events-none absolute left-[-6%] top-[38%] w-[50%] -translate-y-1/2 sm:left-0 sm:top-[46%] sm:w-[34%] lg:left-[5%] lg:top-1/2 lg:w-[28vw] lg:max-w-[440px] xl:left-[6%] xl:w-[30vw] xl:max-w-[460px]"
             aria-hidden="true"
           >
             {/* Subtle glow without large expensive blur */}
@@ -353,54 +353,54 @@ export function StarMap() {
               The panel scrolls internally if a note ever runs long. */}
           <div className="relative min-h-0 flex-1">
             <div className="absolute inset-x-0 bottom-7 top-0 flex items-center justify-center px-2">
-            <AnimatePresence mode="wait">
-              {open ? (
-                <motion.figure
-                  key={open.id}
-                  className="surface-veil max-h-full w-full max-w-lg overflow-y-auto rounded-sm px-5 py-4 text-center sm:px-7 sm:py-5"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -12 }}
-                  transition={{ duration: 0.7, ease: EASE.silk }}
-                >
-                  <span className="t-numeral block text-[0.75rem] text-champagne/60">
-                    {String(stars.indexOf(open) + 1).padStart(2, '0')}
-                  </span>
-                  <figcaption className="t-display mt-1.5 text-[clamp(1.15rem,3.5vw,1.7rem)] italic text-rose-soft">
-                    {open.title}
-                  </figcaption>
-                  <div className="hairline mx-auto my-3 w-14" />
-                  <p className="t-body text-[0.8rem] leading-relaxed sm:text-[0.85rem]">{open.note}</p>
-                </motion.figure>
-              ) : (
-                <motion.p
-                  key="hint"
-                  className="font-sans text-[10px] uppercase tracking-[0.3em] text-paper-faint"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  {copy.starmap.progress(found.size, stars.length)}
-                </motion.p>
-              )}
-            </AnimatePresence>
+              <AnimatePresence mode="wait">
+                {open ? (
+                  <motion.figure
+                    key={open.id}
+                    className="surface-veil max-h-full w-full max-w-lg overflow-y-auto rounded-sm px-5 py-4 text-center sm:px-7 sm:py-5"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.7, ease: EASE.silk }}
+                  >
+                    <span className="t-numeral block text-[0.75rem] text-champagne/60">
+                      {String(stars.indexOf(open) + 1).padStart(2, '0')}
+                    </span>
+                    <figcaption className="t-display mt-1.5 text-[clamp(1.15rem,3.5vw,1.7rem)] italic text-rose-soft">
+                      {open.title}
+                    </figcaption>
+                    <div className="hairline mx-auto my-3 w-14" />
+                    <p className="t-body text-[0.8rem] leading-relaxed sm:text-[0.85rem]">{open.note}</p>
+                  </motion.figure>
+                ) : (
+                  <motion.p
+                    key="hint"
+                    className="font-sans text-[10px] uppercase tracking-[0.3em] text-paper-faint"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    {copy.starmap.progress(found.size, stars.length)}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="absolute inset-x-0 bottom-0 flex h-7 items-center justify-center">
-            <AnimatePresence>
-              {complete && (
-                <motion.p
-                  className="t-display text-[clamp(1rem,3vw,1.35rem)] italic text-champagne"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.2, ease: EASE.silk }}
-                >
-                  {copy.starmap.complete}
-                </motion.p>
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {complete && (
+                  <motion.p
+                    className="t-display text-[clamp(1rem,3vw,1.35rem)] italic text-champagne"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.2, ease: EASE.silk }}
+                  >
+                    {copy.starmap.complete}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>

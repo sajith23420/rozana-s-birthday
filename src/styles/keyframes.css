@@ -132,10 +132,14 @@
 }
 
 @layer components {
-  .rose-petal {
-    /* Petal silhouette: round at the lip, tapering to a point at the
-       base. The gradient fades to nothing at the edge, so the shape
-       reads as soft without a filter on every element. */
+  /* Petal silhouette: round at the lip, tapering to a point at the
+     base. The gradient fades to nothing at the edge, so the shape
+     reads as soft without a filter on every element.
+
+     Shared with the Chapter 08 celebration so there is one petal
+     look in the project; only the timing differs below. */
+  .rose-petal,
+  .celebration-petal {
     border-radius: 68% 4% 68% 4%;
     background: radial-gradient(
       118% 96% at 32% 26%,
@@ -143,9 +147,12 @@
       rgba(200, 85, 110, 0.72) 42%,
       rgba(88, 21, 42, 0) 76%
     );
+    will-change: transform, opacity;
+  }
+
+  .rose-petal {
     animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
     animation-iteration-count: infinite;
-    will-change: transform, opacity;
   }
 }
 
@@ -156,6 +163,203 @@
   .rose-petal {
     animation: none !important;
     opacity: 0.1;
+    transform: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Chapter 08 — the grand finale.
+
+   One movement only. The burst — petals, sparks, the opening warmth —
+   runs once, is finished inside five seconds, and is then taken out
+   of the DOM for good. Nothing here loops: the global RosePetals
+   drift above is the only continuous petal animation in the project,
+   and the finale deliberately does not add a second one.
+
+   Every keyframe touches `transform` and `opacity` only. Per-element
+   variation (heading, distance, spin, peak opacity) rides on custom
+   properties set inline, so three keyframes serve fifty petals.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* A plate that fades in and stays — the veil behind the message.
+   Ends on --fade-to so one keyframe serves every resting level. */
+@keyframes celebration-fade-in {
+  from { opacity: 0; }
+  to   { opacity: var(--fade-to, 1); }
+}
+
+/* The warmth that opens out of the picked rose and then stays as the
+   warm centre light of the final state. */
+@keyframes celebration-bloom {
+  0%   { opacity: 0;    transform: scale(0.28); }
+  26%  { opacity: 1;    transform: scale(1.05); }
+  100% { opacity: 0.62; transform: scale(1.55); }
+}
+
+/* A petal crossing the viewport. --pt-x / --pt-y carry its heading. */
+@keyframes celebration-petal-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.55); opacity: 0; }
+  14%  { opacity: var(--pt-o, 0.5); }
+  72%  { opacity: var(--pt-o, 0.5); }
+  100% {
+    transform: translate3d(var(--pt-x, 12vw), var(--pt-y, -60vh), 0)
+               rotate(var(--pt-r, 220deg)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* The same heading, taken as an arc rather than a straight line. */
+@keyframes celebration-petal-arc {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.5); opacity: 0; }
+  16%  { opacity: var(--pt-o, 0.5); }
+  50%  {
+    transform: translate3d(calc(var(--pt-x, 12vw) * 0.28), calc(var(--pt-y, -60vh) * 0.62), 0)
+               rotate(calc(var(--pt-r, 220deg) * 0.45)) scale(1.06);
+    opacity: var(--pt-o, 0.5);
+  }
+  100% {
+    transform: translate3d(var(--pt-x, 12vw), var(--pt-y, -60vh), 0)
+               rotate(var(--pt-r, 220deg)) scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Thrown into the air: out and up, then carried back down past the
+   bottom of the frame. --pt-y is where it lands, always below. */
+@keyframes celebration-petal-toss {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.35); opacity: 0; }
+  16%  { opacity: var(--pt-o, 0.5); }
+  42%  {
+    transform: translate3d(calc(var(--pt-x, 12vw) * 0.46), calc(var(--pt-y, 40vh) * -0.5), 0)
+               rotate(calc(var(--pt-r, 220deg) * 0.45)) scale(1);
+    opacity: var(--pt-o, 0.5);
+  }
+  78%  { opacity: calc(var(--pt-o, 0.5) * 0.75); }
+  100% {
+    transform: translate3d(var(--pt-x, 12vw), var(--pt-y, 40vh), 0)
+               rotate(var(--pt-r, 220deg)) scale(0.85);
+    opacity: 0;
+  }
+}
+
+/* A gold mote: appears, drifts a little, goes. */
+@keyframes celebration-spark {
+  0%   { transform: translate3d(0, 0, 0) scale(0.2); opacity: 0; }
+  30%  {
+    transform: translate3d(calc(var(--sp-x, 2vw) * 0.3), calc(var(--sp-y, -6vh) * 0.3), 0) scale(1);
+    opacity: var(--sp-o, 0.8);
+  }
+  70%  { opacity: calc(var(--sp-o, 0.8) * 0.55); }
+  100% { transform: translate3d(var(--sp-x, 2vw), var(--sp-y, -6vh), 0) scale(0.3); opacity: 0; }
+}
+
+/* The message: each line rises once into place and stays there. This
+   is the final state of the chapter, so nothing here fades back out. */
+@keyframes celebration-line {
+  0%   { opacity: 0; transform: translate3d(0, 18px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@layer components {
+  .celebration-petal,
+  .celebration-spark,
+  .celebration-line,
+  .celebration-bloom {
+    animation-iteration-count: 1;
+    animation-fill-mode: both;
+    animation-timing-function: var(--ease-silk);
+  }
+
+  .celebration-petal {
+    position: absolute;
+    animation-name: celebration-petal-drift;
+  }
+
+  .celebration-petal--arc { animation-name: celebration-petal-arc; }
+  .celebration-petal--toss { animation-name: celebration-petal-toss; }
+
+  /* ── Shapes ───────────────────────────────────────────────
+     The base is the curved rose petal shared with .rose-petal.
+     Three more silhouettes so fifty petals do not read as fifty
+     copies of one shape. Border-radius only — no extra elements,
+     no clip-path, nothing to rasterise per frame. */
+  .celebration-petal--oval { border-radius: 50%; }
+  .celebration-petal--leaf { border-radius: 0 76% 0 76%; }
+  .celebration-petal--chip { border-radius: 72% 16% 56% 28%; }
+
+  /* ── Tones ────────────────────────────────────────────────
+     The base is dusty pink. These are the variations scattered
+     through it: deep red, burgundy, a little muted green for the
+     leaves, and a few warm gold pieces. */
+  .celebration-petal--red {
+    background: radial-gradient(
+      118% 96% at 32% 26%,
+      rgba(216, 118, 132, 0.9) 0%,
+      rgba(168, 48, 74, 0.74) 44%,
+      rgba(61, 15, 30, 0) 78%
+    );
+  }
+
+  .celebration-petal--wine {
+    background: radial-gradient(
+      118% 96% at 32% 26%,
+      rgba(168, 66, 90, 0.82) 0%,
+      rgba(88, 21, 42, 0.7) 46%,
+      rgba(26, 7, 16, 0) 80%
+    );
+  }
+
+  .celebration-petal--leafy {
+    background: radial-gradient(
+      118% 96% at 34% 28%,
+      rgba(146, 158, 122, 0.72) 0%,
+      rgba(94, 112, 82, 0.58) 46%,
+      rgba(40, 52, 38, 0) 80%
+    );
+  }
+
+  .celebration-petal--gilt {
+    background: radial-gradient(
+      118% 96% at 32% 26%,
+      rgba(240, 223, 192, 0.82) 0%,
+      rgba(217, 190, 142, 0.6) 44%,
+      rgba(140, 119, 82, 0) 80%
+    );
+  }
+
+  .celebration-spark {
+    position: absolute;
+    border-radius: 999px;
+    /* One small static gradient — no filter, nothing animated but
+       transform and opacity. */
+    background: radial-gradient(
+      circle,
+      rgba(240, 223, 192, 0.95) 0%,
+      rgba(217, 190, 142, 0.6) 38%,
+      rgba(217, 190, 142, 0) 72%
+    );
+    animation-name: celebration-spark;
+  }
+
+  .celebration-bloom { animation-name: celebration-bloom; }
+  .celebration-line { animation-name: celebration-line; }
+  .celebration-fade-in {
+    animation-name: celebration-fade-in;
+    animation-timing-function: var(--ease-veil);
+  }
+}
+
+/* Reduced motion: the component renders a still version instead (no
+   petals, no sparks, no travel), so there is nothing to stop here —
+   but the message must not inherit the global 0.001ms animation
+   collapse, which would land it on its faded-out final frame. */
+@media (prefers-reduced-motion: reduce) {
+  .celebration-petal,
+  .celebration-spark,
+  .celebration-line,
+  .celebration-bloom,
+  .celebration-fade-in {
+    animation: none !important;
     transform: none !important;
   }
 }

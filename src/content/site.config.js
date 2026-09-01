@@ -12,11 +12,12 @@
    ══════════════════════════════════════════════════════════════════ */
 
 export const site = {
-  /* What she is called throughout the experience. */
+  /* The nickname — what the little world calls her, and the identity
+     the site is branded with. */
   name: 'Rozy',
-  /* Her full name. Not currently rendered anywhere — kept available for
-     when we decide it should appear. */
-  fullName: 'Rozena',
+  /* Her real name. Used where the writing turns intimate rather than
+     playful: the two birthday climaxes. */
+  fullName: 'Rozana',
   /* Signs the letter and the closing frame. */
   signature: 'Sajith',
 

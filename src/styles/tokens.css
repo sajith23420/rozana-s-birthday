@@ -48,6 +48,9 @@
 :root {
   --z-fx: 1;
   --z-content: 10;
+  /* Chapter 08's celebration overlay: above every chapter, below the
+     cursor light and the navigation rail, which stay usable. */
+  --z-celebration: 40;
   --z-cursor: 50;
   --z-rail: 60;
   --z-dock: 70;
